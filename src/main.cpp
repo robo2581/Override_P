@@ -1,3 +1,4 @@
+#include "lemlib/api.hpp" // IWYU pragma: keep
 #include "main.h"
 #include "lemlib/api.hpp"
 
@@ -72,17 +73,8 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	// Set to negative to reverse motor direction as needed
-	pros::MotorGroup left_motors({1,2,3}, pros::MotorGears::green); // Left motor ports
-	pros::MotorGroup right_motors({11,12,13}, pros::MotorGears::green); // Right motor ports
+	
+	// fill later
 
-	// drivetrain settings
-	lemlib::Drivetrain drivetrain(&left_motors, // left motor group
-                              &right_motors, // right motor group
-                              10, // 10 inch track width
-                              lemlib::Omniwheel::NEW_325, // using new 3.25" omnis
-                              360, // drivetrain rpm is 360
-                              2 // horizontal drift is 2 (for now)
-);
 	
 }
