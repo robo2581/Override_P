@@ -12,7 +12,7 @@
 
 
  // Drivetrain
-pros::MotorGroup left_motors({-9,-10}, pros::MotorGears::green);
+pros::MotorGroup left_motors({9,-10}, pros::MotorGears::green);
 pros::MotorGroup right_motors({1,-2}, pros::MotorGears::green);
 
 // left motors, right motors, 15 in track width, new 3.25 onmis, 360 rpm, horizontal drift 2 (FOR NOW))
@@ -147,7 +147,7 @@ void opcontrol() {
 		// Actually drive the robot (tank control)
 		chassis.tank(leftY, rightY);
 
-		//delay becuase the team insists no delay is somehow *bad* for the motors
+		//delay because the team insists no delay is somehow *bad* for the motors
 		pros::delay(25);
 	}
 }
