@@ -3,20 +3,14 @@
 #include "lemlib/api.hpp"
 #include "constants.h"
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-
-
  // Drivetrain
 pros::MotorGroup left_motors({9,-10}, pros::MotorGears::green);
 pros::MotorGroup right_motors({1,-2}, pros::MotorGears::green);
 
 // left motors, right motors, 15 in track width, new 3.25 onmis, 360 rpm, horizontal drift 2 (FOR NOW))
 lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 15, lemlib::Omniwheel::NEW_325, 360, 2);
+
+// ADD SENSORS HERE LATER
 
 // odometry settings
 lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1
@@ -117,8 +111,13 @@ void competition_initialize() {
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
+
+// "." replaced with "_" because c++
+ASSET(test_path_txt);
+
 void autonomous() {
-	/* add to here later */
+	chassis.setPose(0,0,0);
+    chassis.follow(test_path_txt, 15, 2000);
 }
 
 /**
@@ -135,18 +134,27 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 
-pros::Controller controller(pros::E_CONTROLLER_MASTER);
+pros::Controller driver_control(pros::E_CONTROLLER_MASTER);
+pros::Controller operator_control(pros::E_CONTROLLER_PARTNER);
 
 void opcontrol() {
-	// loop 4eva
+	chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
+    // loop 4eva
 	while (true) {
 		// get left y and right y positions
-		int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		int rightY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+		int leftY = driver_control.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		int rightY = driver_control.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
 		
-		// Actually drive the robot (tank control)
-		chassis.tank(leftY, rightY);
-
+        if ( driver_control.get_digital( pros::E_CONTROLLER_DIGITAL_L2 ) == 1 && driver_control.get_digital( pros::E_CONTROLLER_DIGITAL_R2 ) == 1) {
+            // Breaks on if L2+R2
+            chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
+        } else {
+            if ( driver_control.get_digital( pros::E_CONTROLLER_DIGITAL_L1 ) == 1 && driver_control.get_digital( pros::E_CONTROLLER_DIGITAL_R1 ) == 1) {
+                 leftY = 0.5 * leftY;
+                 rightY = 0.5 * rightY;
+            }
+            chassis.tank(leftY, rightY);
+        }
 		//delay because the team insists no delay is somehow *bad* for the motors
 		pros::delay(25);
 	}
