@@ -11,13 +11,20 @@ pros::MotorGroup right_motors({1,-2}, pros::MotorGears::green);
 lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 15, lemlib::Omniwheel::NEW_325, 360, 2);
 
 // ADD SENSORS HERE LATER
+pros::Imu imu(11);
+
+pros::Rotation vertical_sensor(-12);
+pros::Rotation horizontal_sensor(-13);
+
+lemlib::TrackingWheel vertical_tracking_wheel(&vertical_sensor, lemlib::Omniwheel::NEW_2, 1.75);
+lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_sensor, lemlib::Omniwheel::NEW_2, -4.875);
 
 // odometry settings
-lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1
+lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1
                             nullptr, // vertical tracking wheel 2
-                            nullptr, // horizontal tracking wheel 1
+                            &horizontal_tracking_wheel, // horizontal tracking wheel 1
                             nullptr, // horizontal tracking wheel 2
-                            nullptr // inertial sensor
+                            &imu // inertial sensor
 );
 
 // lateral PID controller
@@ -72,11 +79,12 @@ void initialize() {
             pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
             pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
             pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
-            // delay to save resources (allegedly)
+            // delay to save resources
             pros::delay(20);
         }
     });
 }
+
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
