@@ -14,7 +14,7 @@ lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 15, lemlib::Omniwheel
 pros::Imu imu(11);
 
 pros::Rotation vertical_sensor(-12);
-pros::Rotation horizontal_sensor(-13);
+pros::Rotation horizontal_sensor(13);
 
 lemlib::TrackingWheel vertical_tracking_wheel(&vertical_sensor, lemlib::Omniwheel::NEW_2, 1.75);
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_sensor, lemlib::Omniwheel::NEW_2, -4.875);
@@ -28,7 +28,7 @@ lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel
 );
 
 // lateral PID controller
-lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(12, // proportional gain (kP)
                                               0, // integral gain (kI)
                                               3, // derivative gain (kD)
                                               3, // anti windup
@@ -85,7 +85,6 @@ void initialize() {
     });
 }
 
-
 /**
  * Runs while the robot is in the disabled state of Field Management System or
  * the VEX Competition Switch, following either autonomous or opcontrol. When
@@ -125,9 +124,8 @@ ASSET(test_path_txt);
 
 void autonomous() {
 	chassis.setPose(0,0,0);
-    chassis.follow(test_path_txt, 15, 2000);
+    chassis.turnToHeading(90,100000);
 }
-
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -146,8 +144,10 @@ pros::Controller driver_control(pros::E_CONTROLLER_MASTER);
 pros::Controller operator_control(pros::E_CONTROLLER_PARTNER);
 
 void opcontrol() {
-	chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
+	autonomous();
+    exit(0);
     // loop 4eva
+    /*
 	while (true) {
 		// get left y and right y positions
 		int leftY = driver_control.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
@@ -166,4 +166,5 @@ void opcontrol() {
 		//delay because the team insists no delay is somehow *bad* for the motors
 		pros::delay(25);
 	}
+        */
 }
